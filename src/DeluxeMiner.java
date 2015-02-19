@@ -12,18 +12,21 @@ public class DeluxeMiner {
 	private static HashMap<Integer, Post> posts;
 
 	public static void main(String[] args) {
-		posts = new HashMap<>();
-		users = new HashMap<>();
+		System.out.println(fetchAttribute("OwnerUserId=\"\" OwnerDisplayName=\"MarcelSucks\"", "OwnerUserId"));
 		
-		System.out.println(new Date() + " >>>Lese XML Dateien ein...");
-		readFiles();
-		System.out.println(new Date() + " >>>XML eingelesen");
-
-		for(Entry<Integer, User> entry : users.entrySet()){
-			System.out.println(entry.getKey() + " ### " + entry.getValue());
-			if(entry.getKey() >= 200)
-				break;
-		}
+		
+//		posts = new HashMap<>();
+//		users = new HashMap<>();
+//		
+//		System.out.println(new Date() + " >>>Lese XML Dateien ein...");
+//		readFiles();
+//		System.out.println(new Date() + " >>>XML eingelesen");
+//
+//		for(Entry<Integer, User> entry : users.entrySet()){
+//			System.out.println(entry.getKey() + " ### " + entry.getValue());
+//			if(entry.getKey() >= 200)
+//				break;
+//		}
 	}
 
 	private static void readFiles() {
@@ -122,7 +125,8 @@ public class DeluxeMiner {
 
 	private static String fetchAttribute(String line, String attributeName) {
 		int index = line.indexOf(attributeName);
-					
+		if(index == 0)
+			return "0";
 		index += attributeName.length();
 		
 		if(line.charAt(index) != '=' || line.charAt(index + 1) != '"'){
