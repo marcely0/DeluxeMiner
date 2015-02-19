@@ -122,11 +122,13 @@ public class DeluxeMiner {
 
 	private static String fetchAttribute(String line, String attributeName) {
 		int index = line.indexOf(attributeName);
+					
 		index += attributeName.length();
 		
 		if(line.charAt(index) != '=' || line.charAt(index + 1) != '"'){
 			return fetchAttribute(line.substring(index), attributeName);
 		}
+		index += 2;
 		int length = 0;
 		while (line.charAt(index + length) != '"')
 			length++;
