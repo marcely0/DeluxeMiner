@@ -127,7 +127,7 @@ public class DeluxeMiner {
 
 	private static String fetchAttribute(String line, String attributeName) {
 		int index = line.indexOf(attributeName);
-		if (index == 0)
+		if (index == -1)
 			return "0";
 		index += attributeName.length();
 
