@@ -13,20 +13,19 @@ public class DeluxeMiner {
 
 	public static void main(String[] args) {
 		System.out.println(fetchAttribute("OwnerUserId=\"\" OwnerDisplayName=\"MarcelSucks\"", "OwnerUserId"));
-		
-		
-//		posts = new HashMap<>();
-//		users = new HashMap<>();
-//		
-//		System.out.println(new Date() + " >>>Lese XML Dateien ein...");
-//		readFiles();
-//		System.out.println(new Date() + " >>>XML eingelesen");
-//
-//		for(Entry<Integer, User> entry : users.entrySet()){
-//			System.out.println(entry.getKey() + " ### " + entry.getValue());
-//			if(entry.getKey() >= 200)
-//				break;
-//		}
+
+		// posts = new HashMap<>();
+		// users = new HashMap<>();
+		//
+		// System.out.println(new Date() + " >>>Lese XML Dateien ein...");
+		// readFiles();
+		// System.out.println(new Date() + " >>>XML eingelesen");
+		//
+		// for(Entry<Integer, User> entry : users.entrySet()){
+		// System.out.println(entry.getKey() + " ### " + entry.getValue());
+		// if(entry.getKey() >= 200)
+		// break;
+		// }
 	}
 
 	private static void readFiles() {
@@ -36,38 +35,36 @@ public class DeluxeMiner {
 			File posts = new File("E:/xml/Posts.xml");
 			String line;
 			int i = 0;
-			
+
 			int voteCounter = 67258373;
 			int postCounter = 21736597;
-			
-			
+
 			System.out.println(new Date() + " Lese Votes ein...");
 			reader = new BufferedReader(new FileReader(votes));
 			while ((line = reader.readLine()) != null) {
 				processVoteLine(line);
 				i++;
-				if(i>=100000){
+				if (i >= 100000) {
 					voteCounter -= 100000;
 					System.out.println(voteCounter);
 					i = 0;
 				}
 			}
 			reader.close();
-			
+
 			i = 0;
 			System.out.println(new Date() + " Lese Posts ein...");
 			reader = new BufferedReader(new FileReader(posts));
 			while ((line = reader.readLine()) != null) {
 				processPostLine(line);
 				i++;
-				if(i>=100000){
+				if (i >= 100000) {
 					postCounter -= 100000;
 					System.out.println(postCounter);
 					i = 0;
 				}
 			}
-			
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -80,27 +77,32 @@ public class DeluxeMiner {
 	}
 
 	private static void processPostLine(String line) {
-		if(line.trim().startsWith("<row")){
+		if (line.trim().startsWith("<row")) {
 			int postTypeId = Integer.parseInt(fetchAttribute(line, "PostTypeId"));
-			if(postTypeId == 1 || postTypeId == 2){
-				int userId = Integer.parseInt(fetchAttribute(line, "OwnerUserId"));
-				if(userId > 0){
+			if (postTypeId == 1 || postTypeId == 2) {
+				int userId = 0;
+				try {
+					userId = Integer.parseInt(fetchAttribute(line, "OwnerUserId"));
+				} catch (NumberFormatException e) {
+					System.out.println("ups, da wurde was nicht richtig formatiert");
+				}
+				if (userId > 0) {
 					int postId = Integer.parseInt(fetchAttribute(line, "Id"));
-					
+
 					User u = users.get(userId);
-					if(u == null){
+					if (u == null) {
 						u = new User();
 						users.put(userId, u);
 					}
-					
+
 					u.raisePostCount();
-					
+
 					Post p = posts.remove(postId);
-					if(p != null){
-						if(p.isPostGood()){
+					if (p != null) {
+						if (p.isPostGood()) {
 							u.raiseGoodPostCount();
 						}
-					
+
 					}
 				}
 			}
@@ -108,28 +110,28 @@ public class DeluxeMiner {
 	}
 
 	private static void processVoteLine(String line) {
-		if(line.trim().startsWith("<row")){
+		if (line.trim().startsWith("<row")) {
 			int postId = Integer.parseInt(fetchAttribute(line, "PostId"));
 			int voteTypeId = Integer.parseInt(fetchAttribute(line, "VoteTypeId"));
-			
+
 			Post p = posts.get(postId);
-			if(p == null){
+			if (p == null) {
 				p = new Post();
 				posts.put(postId, p);
 			}
-			
+
 			p.set(voteTypeId);
-			
+
 		}
 	}
 
 	private static String fetchAttribute(String line, String attributeName) {
 		int index = line.indexOf(attributeName);
-		if(index == 0)
+		if (index == 0)
 			return "0";
 		index += attributeName.length();
-		
-		if(line.charAt(index) != '=' || line.charAt(index + 1) != '"'){
+
+		if (line.charAt(index) != '=' || line.charAt(index + 1) != '"') {
 			return fetchAttribute(line.substring(index), attributeName);
 		}
 		index += 2;
