@@ -12,20 +12,27 @@ public class DeluxeMiner {
 	private static HashMap<Integer, Post> posts;
 
 	public static void main(String[] args) {
-		System.out.println(fetchAttribute("OwnerUserId=\"\" OwnerDisplayName=\"MarcelSucks\"", "OwnerUserId"));
 
-		// posts = new HashMap<>();
-		// users = new HashMap<>();
-		//
-		// System.out.println(new Date() + " >>>Lese XML Dateien ein...");
-		// readFiles();
-		// System.out.println(new Date() + " >>>XML eingelesen");
-		//
-		// for(Entry<Integer, User> entry : users.entrySet()){
-		// System.out.println(entry.getKey() + " ### " + entry.getValue());
-		// if(entry.getKey() >= 200)
-		// break;
-		// }
+		posts = new HashMap<>();
+		users = new HashMap<>();
+
+		System.out.println(new Date() + " >>>Lese XML Dateien ein...");
+		readFiles();
+		System.out.println(new Date() + " >>>XML eingelesen");
+		System.out.println(new Date() + " >>>Berechne Prozentuale Verteilung");
+		int[] areas = new int[10];
+		int[] postCounts = new int[10];
+		
+		for (Entry<Integer, User> entry : users.entrySet()) {
+			float x = entry.getValue().getPercentage();
+			areas[(int) ((x-0.000001) * 10)]++;
+			postCounts[(int) ((x-0.000001) * 10)]+= entry.getValue().getPosts();
+		}
+		
+		System.out.println(new Date() + " >>>Prozentwertebereiche:");
+		for (int i = 0; i < areas.length; i++) {
+			System.out.println(i + "0% - " + (i+1) + "0%\t" + areas[i] + "\tPosts:\t" + postCounts[i]);
+		}
 	}
 
 	private static void readFiles() {
@@ -78,13 +85,16 @@ public class DeluxeMiner {
 
 	private static void processPostLine(String line) {
 		if (line.trim().startsWith("<row")) {
-			int postTypeId = Integer.parseInt(fetchAttribute(line, "PostTypeId"));
+			int postTypeId = Integer
+					.parseInt(fetchAttribute(line, "PostTypeId"));
 			if (postTypeId == 1 || postTypeId == 2) {
 				int userId = 0;
 				try {
-					userId = Integer.parseInt(fetchAttribute(line, "OwnerUserId"));
+					userId = Integer.parseInt(fetchAttribute(line,
+							"OwnerUserId"));
 				} catch (NumberFormatException e) {
-					System.out.println("ups, da wurde was nicht richtig formatiert");
+					System.out
+							.println("ups, da wurde was nicht richtig formatiert");
 				}
 				if (userId > 0) {
 					int postId = Integer.parseInt(fetchAttribute(line, "Id"));
@@ -112,7 +122,8 @@ public class DeluxeMiner {
 	private static void processVoteLine(String line) {
 		if (line.trim().startsWith("<row")) {
 			int postId = Integer.parseInt(fetchAttribute(line, "PostId"));
-			int voteTypeId = Integer.parseInt(fetchAttribute(line, "VoteTypeId"));
+			int voteTypeId = Integer
+					.parseInt(fetchAttribute(line, "VoteTypeId"));
 
 			Post p = posts.get(postId);
 			if (p == null) {
