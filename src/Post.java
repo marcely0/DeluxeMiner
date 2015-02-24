@@ -19,6 +19,7 @@ public class Post {
 	}
 	
 	private boolean accepted;
+
 	private int upvotes;
 	private int downvotes;
 	
@@ -37,4 +38,15 @@ public class Post {
 		return false;
 	}
 
+	public boolean isAccepted() {
+		return accepted;
+	}
+
+	public int getUpvotes() {
+		return upvotes;
+	}
+	
+	public int getDownvotes() {
+		return downvotes;
+	}
 }

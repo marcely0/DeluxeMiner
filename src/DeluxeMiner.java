@@ -20,18 +20,25 @@ public class DeluxeMiner {
 		readFiles();
 		System.out.println(new Date() + " >>>XML eingelesen");
 		System.out.println(new Date() + " >>>Berechne Prozentuale Verteilung");
+		
 		int[] areas = new int[10];
 		int[] postCounts = new int[10];
+		int[] upvotes = new int[10];
+		int[] downvotes = new int[10];
+		int[] acceptedCount = new int[10];
 		
 		for (Entry<Integer, User> entry : users.entrySet()) {
 			float x = entry.getValue().getPercentage();
 			areas[(int) ((x-0.000001) * 10)]++;
 			postCounts[(int) ((x-0.000001) * 10)]+= entry.getValue().getPosts();
+			upvotes[(int) ((x-0.000001) * 10)]+= entry.getValue().getUpvotes();
+			downvotes[(int) ((x-0.000001) * 10)]+= entry.getValue().getDownvotes();
+			acceptedCount[(int) ((x-0.000001) * 10)]+= entry.getValue().getAcceptedCount();
 		}
 		
 		System.out.println(new Date() + " >>>Prozentwertebereiche:");
 		for (int i = 0; i < areas.length; i++) {
-			System.out.println(i + "0% - " + (i+1) + "0%\t" + areas[i] + "\tPosts:\t" + postCounts[i]);
+			System.out.println(i + "0% - " + (i+1) + "0%\tUser:\t" + areas[i] + "\tPosts:\t" + postCounts[i] + "\tUpvotes:\t" + upvotes[i] + "\tDownvotes:\t" + downvotes[i] + "\tAccepted:\t" + acceptedCount[i]);
 		}
 	}
 
@@ -109,6 +116,13 @@ public class DeluxeMiner {
 
 					Post p = posts.remove(postId);
 					if (p != null) {
+						u.raiseDownvotes(p.getDownvotes());
+						u.raiseUpvotes(u.getUpvotes());
+
+						if(p.isAccepted()){
+							u.raiseAcceptedCount();
+						}
+						
 						if (p.isPostGood()) {
 							u.raiseGoodPostCount();
 						}
